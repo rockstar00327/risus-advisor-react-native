@@ -1,7 +1,4 @@
 import React, { useCallback } from "react";
-// import AdVisorLogo from "../buttons/FeedIcons/AdVisorLogo";
-import SearchIcon from "../buttons/FeedIcons/SearchIcon";
-import BellIcon from "../buttons/FeedIcons/Bellicon";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -10,27 +7,29 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Pressable,
 } from "react-native";
 
 const FEED_OPTIONS = [
   {
-    title: "Trending",
-    value: "trending",
-  },
-  {
-    title: "My interests",
-    value: "interests",
+    title: "For you",
+    value: "foryou",
+    icon: require('../../../assets/images/for_you_icon.png'),
   },
   {
     title: "Explore",
     value: "explore",
+    icon: require('../../../assets/images/explore_icon.png'),
+  },
+  {
+    title: "Trending",
+    value: "trending",
+    icon: require('../../../assets/images/trending_icon.png'),
   },
 ];
 
 const FeedHeader = ({ userImage, notifications }) => {
   const navigation = useNavigation();
-  const [selectedTab, setSelectedTab] = React.useState("trending"); // Default selected tab
+  const [selectedTab, setSelectedTab] = React.useState("trending");
 
   useFocusEffect(
     useCallback(() => {
@@ -51,7 +50,6 @@ const FeedHeader = ({ userImage, notifications }) => {
   const handleProfilePress = useCallback(() => {
     navigation.navigate("ProfileScreen");
   }, [navigation]);
-  // console.log("notification", notifications);
 
   return (
     <LinearGradient
@@ -60,22 +58,20 @@ const FeedHeader = ({ userImage, notifications }) => {
     >
       <View style={styles.container}>
         <View style={styles.headerTop}>
-          {/* Left - Notification Icon */}
+          {/* Left - Notification Badge */}
           <TouchableOpacity
             onPress={handleNotificationPress}
             activeOpacity={0.7}
-            style={styles.leftIcon}
           >
-            <View style={styles.notificationContainer}>
-              <BellIcon width={20} height={20} />
-              <Text style={styles.badgeText}>{notifications.length}</Text>
+            <View style={styles.notificationBadge}>
+              <Image source={require('../../../assets/images/bell.png')} style={styles.notificationImage} />
+              <Text style={styles.badgeText}>{notifications?.length || 0}</Text>
             </View>
           </TouchableOpacity>
 
-          {/* Center - Risus Logo */}
+          {/* Center - Logo */}
           <View style={styles.centerLogo}>
             <Text style={styles.logo}>Risus</Text>
-            {/* <AdVisorLogo width={89} height={20} /> */}
           </View>
 
           {/* Right - Search and Profile Icons */}
@@ -85,7 +81,7 @@ const FeedHeader = ({ userImage, notifications }) => {
               activeOpacity={0.7}
               style={styles.iconSpacing}
             >
-              <SearchIcon width={24} height={24} />
+              <Image source={require('../../../assets/images/search.png')} style={styles.searchIconImage} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleProfilePress} activeOpacity={0.7}>
               <Image
@@ -99,14 +95,21 @@ const FeedHeader = ({ userImage, notifications }) => {
 
         <View style={styles.tabContainer}>
           {FEED_OPTIONS.map((tab) => (
-            <Pressable
+            <TouchableOpacity
               key={tab.value}
               onPress={() => setSelectedTab(tab.value)}
               style={[
-                styles.tabButton,
+                styles.tab,
                 selectedTab === tab.value && styles.activeTab,
               ]}
             >
+              <Image 
+                source={tab.icon} 
+                style={[
+                  styles.tabIcon,
+                  selectedTab === tab.value && styles.activeTabIcon
+                ]} 
+              />
               <Text
                 style={[
                   styles.tabText,
@@ -115,7 +118,7 @@ const FeedHeader = ({ userImage, notifications }) => {
               >
                 {tab.title}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingTop: 12,
-    paddingHorizontal: 16, //as per the seeyam bhai's design
+    paddingHorizontal: 16,
     paddingBottom: 12,
   },
   headerTop: {
@@ -137,10 +140,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 7,
-  },
-  leftIcon: {
-    flex: 1,
-    alignItems: "flex-start",
   },
   centerLogo: {
     flex: 2,
@@ -161,25 +160,32 @@ const styles = StyleSheet.create({
   iconSpacing: {
     marginRight: 16,
   },
-  notificationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    width: "65%",
-    height: 30,
+  notificationBadge: {
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#000000",
+    height: 30,
     paddingVertical: 4,
     paddingHorizontal: 8,
+    borderColor: '#000000',
+    borderWidth: 1,
     gap: 4,
+    minWidth: 50,
+  },
+  notificationImage: {
+    width: 20,
+    height: 20
   },
   badgeText: {
-    marginLeft: 4,
     color: "#000",
     fontSize: 16,
     fontFamily: "Figtree-Bold",
     textAlign: "center",
+  },
+  searchIconImage: {
+    width: 24,
+    height: 24
   },
   profileImage: {
     width: 32,
@@ -188,25 +194,47 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E5E5",
   },
   tabContainer: {
+    width: '100%',
     flexDirection: "row",
-    gap: 24,
     marginTop: 4,
   },
-  tabButton: {
-    paddingVertical: 4,
+  tab: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginRight: 10,
+    gap: 10,
+    width: '30%'
   },
   activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#0063AC",
+    backgroundColor: 'rgba(155, 212, 255, 0.25)', // Changed from hex to rgba for better transparency support
+  },
+  tabIcon: {
+    width: 14,
+    height: 14,
+    objectFit: 'cover',
+    tintColor: '#131313', // Default color for inactive icons
+  },
+  activeTabIcon: {
+    tintColor: '#0167CC', // Active icon color (matches your active text color)
   },
   tabText: {
-    fontSize: 15,
-    fontFamily: "Figtree-Regular",
-    color: "#00000080",
+    fontFamily: 'Figtree_400Regular',
+    fontWeight: '600',
+    fontStyle: 'normal',
+    fontSize: 14,
+    lineHeight: 16,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#131313',
   },
   activeTabText: {
-    color: "#0063AC",
-    fontFamily: "Figtree-Medium",
+    color: "#0167CC",
+    fontWeight: "600",
   },
 });
 

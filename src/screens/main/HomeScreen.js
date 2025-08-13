@@ -668,6 +668,12 @@ export default function HomeFeed() {
                 <Text style={styles.postUsername}>@{currentPost.user.username}</Text>
               </View>
             </View>
+            
+            {/* Like icon and count overlaid on thumbnail */}
+            <View style={styles.thumbnailLikeOverlay}>
+              <Image source={require('../../../assets/images/likes.png')} style={styles.thumbnailLikeIcon} />
+              <Text style={styles.thumbnailLikeText}>{currentPost.total_likes || '0'}</Text>
+            </View>
           </View>
           
           {loadingReposts ? (
@@ -1109,11 +1115,13 @@ const styles = StyleSheet.create({
   postUserName: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   postUsername: {
-    color: '#94A3B8',
-    fontSize: 14,
+    color: '#FFFFFF80',
+    textTransform: 'lowercase',
+    fontWeight: '400',
+    fontSize: 12,
   },
   postImageContainer: {
     position: 'relative',
@@ -1399,9 +1407,7 @@ const styles = StyleSheet.create({
   },
   repostsHeader: {
     backgroundColor: '#F0F8FF',
-    paddingTop: 30,
     paddingHorizontal: 20,
-    paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
@@ -1571,17 +1577,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     resizeMode: 'cover',
   },
-  // dateText: {
-  //   fontSize: 14,
-  //   color: '#000000BF',
-  //   fontWeight: 500,
-  //   transform: [{ rotate: '-90deg' }],
-  // },
-  // calendar: {
-  //   width: 20,
-  //   height: 20,
-  // },
-  
   emptyRepostsContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -1601,5 +1596,22 @@ const styles = StyleSheet.create({
     color: '#64748B',
     textAlign: 'center',
     lineHeight: 24,
+  },
+  thumbnailLikeOverlay: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4
+  },
+  thumbnailLikeIcon: {
+    width: 26,
+    height: 26,
+  },
+  thumbnailLikeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '400',
   },
 });
