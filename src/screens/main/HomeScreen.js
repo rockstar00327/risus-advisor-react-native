@@ -50,6 +50,59 @@ export default function HomeFeed() {
   const [loadingReposts, setLoadingReposts] = useState(false);
   const flatListRef = useRef(null);
 
+  // New states for bottom images animation
+  const [bottomImagesOpacity] = useState(new Animated.Value(1));
+
+  // Get default image
+  const getDefaultImage = () => 'https://via.placeholder.com/400x500/1A2B3D/FFFFFF?text=No+Image';
+
+  // Get bottom images for current post
+  const getBottomImages = () => {
+    const currentPost = getCurrentPost();
+    if (!currentPost) return [getDefaultImage(), getDefaultImage(), getDefaultImage()];
+
+    const currentReposts = getCurrentPostReposts();
+    const images = [];
+
+    // First, add repost images
+    currentReposts.forEach(repost => {
+      if (repost.images && repost.images.length > 0 && repost.images[0].image) {
+        images.push(repost.images[0].image);
+      }
+    });
+
+    // If we need more images, add main post image
+    if (images.length < 3) {
+      const mainPostImage = currentPost.images && currentPost.images.length > 0 && currentPost.images[0].image
+        ? currentPost.images[0].image
+        : getDefaultImage();
+      
+      const needed = 3 - images.length;
+      for (let i = 0; i < needed; i++) {
+        images.push(mainPostImage);
+      }
+    }
+
+    // Take only first 3 images
+    return images.slice(0, 3);
+  };
+
+  // Animate bottom images when post changes
+  const animateBottomImages = useCallback(() => {
+    Animated.sequence([
+      Animated.timing(bottomImagesOpacity, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(bottomImagesOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, [bottomImagesOpacity]);
+
   // Fetch reposts for a specific thread
   const fetchReposts = async (threadId) => {
     try {
@@ -439,7 +492,7 @@ export default function HomeFeed() {
               source={
                 post.images && post.images.length > 0 && post.images[0].image
                   ? { uri: post.images[0].image }
-                  : { uri: 'https://via.placeholder.com/400x500/1A2B3D/FFFFFF?text=No+Image' }
+                  : { uri: getDefaultImage() }
               } 
               style={styles.postImage} 
             />
@@ -597,7 +650,7 @@ export default function HomeFeed() {
               source={
                 currentPost.images && currentPost.images.length > 0 && currentPost.images[0].image
                   ? { uri: currentPost.images[0].image }
-                  : { uri: 'https://via.placeholder.com/400x200/1A2B3D/FFFFFF?text=No+Image' }
+                  : { uri: getDefaultImage() }
               } 
               style={styles.thumbnailImage} 
             />
@@ -635,6 +688,56 @@ export default function HomeFeed() {
     );
   };
 
+  // Render bottom images component
+  const renderBottomImages = () => {
+    const bottomImages = getBottomImages();
+    
+    return (
+      <Animated.View 
+        style={[
+          styles.bottomImagesContainer,
+          {
+            opacity: bottomImagesOpacity
+          }
+        ]}
+      >
+        {bottomImages.map((imageUri, index) => {
+          // Apply different styles based on position
+          let imageStyle = [styles.bottomImage];
+          let wrapperStyle = [styles.bottomImageWrapper];
+          
+          if (index === 0) {
+            // First image - rotate left with strong blur
+            wrapperStyle.push(styles.leftImageWrapper);
+            imageStyle.push(styles.leftImage);
+          } else if (index === 1) {
+            // Center image - gradient blur effect (simulated with overlay)
+            wrapperStyle.push(styles.centerImageWrapper);
+            imageStyle.push(styles.centerImage);
+          } else if (index === 2) {
+            // Third image - rotate right with strong blur
+            wrapperStyle.push(styles.rightImageWrapper);
+            imageStyle.push(styles.rightImage);
+          }
+          
+          return (
+            <View key={index} style={wrapperStyle}>
+              <Image 
+                source={{ uri: imageUri }}
+                style={imageStyle}
+                blurRadius={index === 1 ? 2 : 36} // Light blur for center, strong blur for sides
+              />
+              {/* Gradient overlay for center image to simulate gradient blur */}
+              {index === 1 && (
+                <View style={styles.gradientOverlay} />
+              )}
+            </View>
+          );
+        })}
+      </Animated.View>
+    );
+  };
+
   // Additional scroll handler to ensure current post tracking
   const handleScroll = useCallback((event) => {
     const scrollX = event.nativeEvent.contentOffset.x;
@@ -642,9 +745,10 @@ export default function HomeFeed() {
     
     if (newIndex !== currentPostIndex && newIndex >= 0 && newIndex < feedData.length) {
       setCurrentPostIndex(newIndex);
+      animateBottomImages(); // Animate when post changes
       console.log(`Current post changed via scroll to index: ${newIndex}, Post ID: ${feedData[newIndex]?.id}, Thread: ${feedData[newIndex]?.thread}`);
     }
-  }, [currentPostIndex, feedData, screenWidth]);
+  }, [currentPostIndex, feedData, screenWidth, animateBottomImages]);
 
   // Additional scroll handler for momentum end
   const handleMomentumScrollEnd = useCallback((event) => {
@@ -653,9 +757,10 @@ export default function HomeFeed() {
     
     if (newIndex !== currentPostIndex && newIndex >= 0 && newIndex < feedData.length) {
       setCurrentPostIndex(newIndex);
+      animateBottomImages(); // Animate when post changes
       console.log(`Current post changed via momentum end to index: ${newIndex}, Post ID: ${feedData[newIndex]?.id}, Thread: ${feedData[newIndex]?.thread}`);
     }
-  }, [currentPostIndex, feedData, screenWidth]);
+  }, [currentPostIndex, feedData, screenWidth, animateBottomImages]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
@@ -676,6 +781,7 @@ export default function HomeFeed() {
       const newIndex = mostVisibleItem.index;
       if (newIndex !== null && newIndex !== undefined && newIndex !== currentPostIndex) {
         setCurrentPostIndex(newIndex);
+        animateBottomImages(); // Animate when post changes
         console.log(`Current post changed to index: ${newIndex}, Post ID: ${feedData[newIndex]?.id}, Thread: ${feedData[newIndex]?.thread}`);
       }
     }
@@ -715,7 +821,7 @@ export default function HomeFeed() {
               source={
                 currentPost.images && currentPost.images.length > 0 && currentPost.images[0].image
                   ? { uri: currentPost.images[0].image }
-                  : { uri: 'https://via.placeholder.com/80x60/1A2B3D/FFFFFF?text=No+Image' }
+                  : { uri: getDefaultImage() }
               } 
               style={styles.previewImage} 
             />
@@ -803,7 +909,7 @@ export default function HomeFeed() {
           onRefresh={handleRefresh}
         />
         
-        {feedData.length > 0 && (
+        {/* {feedData.length > 0 && (
           <View style={styles.pageIndicators}>
             {feedData.map((_, index) => (
               <View
@@ -815,7 +921,10 @@ export default function HomeFeed() {
               />
             ))}
           </View>
-        )}
+        )} */}
+
+        {/* Bottom Images Component */}
+        {feedData.length > 0 && renderBottomImages()}
         
         <Animated.View 
           style={[
@@ -829,9 +938,10 @@ export default function HomeFeed() {
           ]}
           {...panResponder.panHandlers}
         >
-          <View style={styles.swipeIndicator}>
-            <Text style={styles.swipeArrow}>↑</Text>
-          </View>
+          <Image 
+            source={require('../../../assets/images/swipe_button.png')}
+            style={styles.swipeArrow} 
+          />
           <Text style={styles.swipeUpText}>
             Swipe Up to see the reposts
           </Text>
@@ -1117,7 +1227,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     position: 'absolute',
-    bottom: 70,
+    bottom: 220, // Moved up to make space for larger bottom images
     width: '100%',
   },
   pageIndicator: {
@@ -1127,11 +1237,77 @@ const styles = StyleSheet.create({
     backgroundColor: '#60A5FA',
     marginHorizontal: 4,
   },
+
+  // New styles for bottom images
+  bottomImagesContainer: {
+    position: 'absolute',
+    bottom: 0, // Above the swipe button
+    left: 0,
+    right: 0,
+    height: 40,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  bottomImageWrapper: {
+    marginHorizontal: 4,
+    borderRadius: 8,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  bottomImage: {
+    width: 250,
+    height: 200,
+    resizeMode: 'cover',
+  },
+  // Left image styles (rotated left)
+  leftImageWrapper: {
+    transform: [{ rotate: '-15deg' }],
+    zIndex: 1,
+    marginRight: -50
+  },
+  leftImage: {
+    // Additional styles for left image if needed
+  },
+  // Center image styles (blurred)
+  centerImageWrapper: {
+    zIndex: 3, // Highest z-index for center
+    marginTop: -75, // Move center image higher than side images
+    position: 'relative',
+  },
+  centerImage: {
+    // Light blur effect is applied via blurRadius prop
+  },
+  // Gradient overlay to simulate gradient blur effect
+  gradientOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '10%', // Cover bottom 60% of the image
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent overlay
+    // Note: For true gradient blur, you'd need react-native-linear-gradient
+    // This is a simplified simulation
+  },
+  // Right image styles (rotated right)
+  rightImageWrapper: {
+    transform: [{ rotate: '15deg' }],
+    zIndex: 1,
+    marginLeft: -50,
+  },
+  rightImage: {
+    // Additional styles for right image if needed
+  },
   
   fixedSwipeButton: {
     position: 'absolute',
     height: 48,
-    bottom: 16,
+    bottom: 32,
     left: 64,
     right: 64,
     flexDirection: 'row',
@@ -1146,20 +1322,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#A9A9A9',
     backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    gap: 10
   },
   swipeUpText: {
-    color: '#60A5FA',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  swipeIndicator: {
-    position: 'absolute',
-    left: 32,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '400',
   },
   swipeArrow: {
-    color: '#60A5FA',
-    fontSize: 18,
-    fontWeight: 'bold',
+    width: 24,
+    height: 24
   },
   
   swipePreview: {
