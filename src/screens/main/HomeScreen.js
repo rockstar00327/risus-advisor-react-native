@@ -1468,40 +1468,71 @@ const styles = StyleSheet.create({
   },
   
   repostSection: {
-    flexDirection: 'row',
     width: '100%',
     marginBottom: 16,
-  },
-  repostSectionLeft: {
-    justifyContent: 'flex-start',
-  },
-  repostSectionRight: {
-    justifyContent: 'flex-end',
+    paddingLeft: 32, // Standard padding from screen edges
+    position: 'relative',
   },
   
   repostItem: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    maxWidth: '75%',
+    width: '100%', // Full width like in second image
+    position: 'relative',
+    gap: 8
   },
-  repostItemLeft: {},
-  repostItemRight: {},
+  repostItemLeft: {
+    // Remove margins for full width
+  },
+  repostItemRight: {
+    // Remove margins for full width
+  },
   
+  // Date section positioned on the left side for all items
   repostDateLeft: {
+    position: 'absolute',
+    left: 0, // Position outside the main container
+    top: '50%',
+    transform: [{ translateY: -25 }], // Center vertically
     justifyContent: 'center',
     alignItems: 'center',
+    width: 20,
+    height: 50,
+    zIndex: 1,
     gap: 30
   },
   repostDateRight: {
+    position: 'absolute',
+    left: 0, // Position outside the main container (same as left for consistency)
+    top: '50%',
+    transform: [{ translateY: -25 }], // Center vertically
     justifyContent: 'center',
     alignItems: 'center',
+    width: 20,
+    height: 50,
+    zIndex: 1,
     gap: 30
+  },
+  
+  dateText: {
+    fontSize: 14,
+    color: '#64748B', // Lighter color to match the design
+    fontWeight: '400',
+    transform: [{ rotate: '-90deg' }],
+    width: 90,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  calendar: {
+    width: 20, // Smaller icon
+    height: 20, // Smaller icon
+    // tintColor: '#64748B', // Match text color
   },
   
   repostHeader: {
@@ -1519,35 +1550,37 @@ const styles = StyleSheet.create({
   },
   repostUserName: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1E293B',
+    fontWeight: '500',
+    color: '#000000',
   },
   repostUsername: {
-    fontSize: 14,
-    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '400',
+    textTransform: 'lowercase',
+    color: '#00000080',
   },
   repostTextContent: {
-    fontSize: 14,
-    color: '#1E293B',
-    marginBottom: 12,
+    fontSize: 12,
+    fontWeight: 400,
+    lineHeight: '150%',
+    color: '#000000',
   },
   repostImage: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
-    marginTop: 12,
+    borderRadius: 16,
     resizeMode: 'cover',
   },
-  dateText: {
-    fontSize: 14,
-    color: '#000000BF',
-    fontWeight: 500,
-    transform: [{ rotate: '-90deg' }],
-  },
-  calendar: {
-    width: 20,
-    height: 20,
-  },
+  // dateText: {
+  //   fontSize: 14,
+  //   color: '#000000BF',
+  //   fontWeight: 500,
+  //   transform: [{ rotate: '-90deg' }],
+  // },
+  // calendar: {
+  //   width: 20,
+  //   height: 20,
+  // },
   
   emptyRepostsContainer: {
     flex: 1,
