@@ -1,0 +1,35 @@
+ expo-dev-client@5.0.12 - expected version: ~5.0.20
+
+  expo-font@13.0.3 - expected version: ~13.0.4
+
+  expo-image@2.0.5 - expected version: ~2.0.7
+
+  expo-video@2.0.5 - expected version: ~2.0.6
+
+  react-native@0.76.7 - expected version: 0.76.9
+
+  react-native-reanimated@3.7.2 - expected version: ~3.16.1
+
+
+
+2025-06-12T11:17:29.745265+00:00 app[web.1]: 10.1.14.112:46820 - - [12/Jun/2025:11:17:29] "GET /api/user/3/get-user-posts/?q=reposts" 200 3253
+2025-06-12T11:17:41.230317+00:00 heroku[router]: at=info method=GET path="/api/user/profile/" host=advisor-django-46d4aa46efd5.herokuapp.com request_id=fa07f5f9-334b-0b96-9311-e7929547c3ef fwd="31.145.132.146" dyno=web.1 connect=0ms service=9127ms status=200 bytes=9210 protocol=http1.1 tls=true tls_version=unknown
+2025-06-12T11:17:41.229836+00:00 app[web.1]: 10.1.4.133:54726 - - [12/Jun/2025:11:17:41] "GET /api/user/profile/" 200 9210
+2025-06-12T11:17:43.309408+00:00 heroku[router]: at=info method=GET path="/api/feed/" host=advisor-django-46d4aa46efd5.herokuapp.com request_id=1bdff0c4-ca26-e8dd-7231-fe51ce79d579 fwd="31.145.132.146" dyno=web.1 connect=0ms service=11205ms status=200 bytes=4862 protocol=http1.1 tls=true tls_version=unknown
+2025-06-12T11:17:43.309083+00:00 app[web.1]: 10.1.80.29:51162 - - [12/Jun/2025:11:17:43] "GET /api/feed/" 200 4862
+2025-06-12T11:17:46.007313+00:00 heroku[router]: at=info method=GET path="/api/user/get-share-list/" host=advisor-django-46d4aa46efd5.herokuapp.com request_id=e0ea3d69-779b-e3e8-2c26-c68962840892 fwd="31.145.132.146" dyno=web.1 connect=0ms service=2198ms status=200 bytes=7713 protocol=http1.1 tls=true tls_version=unknown
+2025-06-12T11:17:46.029794+00:00 heroku[router]: at=info method=GET path="/api/user/get-share-list/" host=advisor-django-46d4aa46efd5.herokuapp.com request_id=b9d54ecf-2e0b-782f-2c62-cc7731a5e8f8 fwd="31.145.132.146" dyno=web.1 connect=0ms service=2221ms status=200 bytes=7713 protocol=http1.1 tls=true tls_version=unknown
+2025-06-12T11:17:46.006956+00:00 app[web.1]: 10.1.80.29:51162 - - [12/Jun/2025:11:17:46] "GET /api/user/get-share-list/" 200 7713
+2025-06-12T11:17:46.029277+00:00 app[web.1]: 10.1.4.133:54726 - - [12/Jun/2025:11:17:46] "GET /api/user/get-share-list/" 200 7713
+
+
+
+
+
+⚒️Need to fix
+1. Edit profile
+2. Feed pagination ✅
+3. forget pass
+4. Payment method (coming soon)
+5. User Profile bio default empty 
+

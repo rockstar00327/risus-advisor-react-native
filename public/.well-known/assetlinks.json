@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.advisor.release",
+      "sha256_cert_fingerprints": [
+        "C9:82:59:E6:EA:D0:8C:18:6E:57:2B:24:6E:09:61:74:34:48:43:4B:BA:AA:AC:49:5D:87:9B:01:09:41:2C:D0"
+      ]
+    }
+  }
+]
