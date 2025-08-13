@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import AdVisorLogo from "../buttons/FeedIcons/AdVisorLogo";
+// import AdVisorLogo from "../buttons/FeedIcons/AdVisorLogo";
 import SearchIcon from "../buttons/FeedIcons/SearchIcon";
 import BellIcon from "../buttons/FeedIcons/Bellicon";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";

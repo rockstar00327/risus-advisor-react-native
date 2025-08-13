@@ -774,7 +774,7 @@ export default function HomeFeed() {
 
         <FeedHeader
           userImage={avatar || userImage}
-          notifications={allnot || []}
+          notifications={allnot?.result | []}
         />
         
         <FlatList
@@ -978,7 +978,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     position: 'relative',
-    marginBottom: 50,
   },
   postHeader: {
     position: 'absolute',
