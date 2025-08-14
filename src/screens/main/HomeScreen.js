@@ -455,13 +455,14 @@ export default function HomeFeed() {
   };
 
   const getUserDisplayName = (user) => {
+    if (!user) return 'Unknown User';
     if (user.display_name) {
       return user.display_name;
     }
     if (user.first_name || user.last_name) {
-      return `${user.first_name} ${user.last_name}`.trim();
+      return `${user.first_name || ''} ${user.last_name || ''}`.trim();
     }
-    return user.username;
+    return user.username || 'Unknown User';
   };
 
   const renderRepostsHeader = () => (
@@ -481,6 +482,8 @@ export default function HomeFeed() {
   );
 
   const renderMainPost = ({ item: post, index }) => {
+    if (!post) return null;
+    
     const postReposts = repostsData[post.thread] || [];
     
     return (
@@ -500,7 +503,7 @@ export default function HomeFeed() {
             <View style={styles.postHeader}>
               <Image 
                 source={
-                  post.user.image 
+                  post.user && post.user.image 
                     ? { uri: post.user.image }
                     : { uri: 'https://via.placeholder.com/36x36/94A3B8/FFFFFF?text=U' }
                 } 
@@ -508,7 +511,7 @@ export default function HomeFeed() {
               />
               <View style={styles.postUserInfo}>
                 <Text style={styles.postUserName}>{getUserDisplayName(post.user)}</Text>
-                <Text style={styles.postUsername}>@{post.user.username} • {formatTime(post.date_created)}</Text>
+                <Text style={styles.postUsername}>@{post.user?.username || 'unknown'} • {formatTime(post.date_created)}</Text>
               </View>
             </View>
             <View style={styles.postStats}>
@@ -524,7 +527,7 @@ export default function HomeFeed() {
             
             <View style={styles.postTextOverlay}>
               <View style={{ flex: 1, marginRight: 12 }}>
-                <Text style={styles.postTextOnImage}>{post.content}</Text>
+                <Text style={styles.postTextOnImage}>{post.content || ''}</Text>
                 <TouchableOpacity style={styles.readMoreOnImage}>
                   <Text style={styles.readMoreTextOnImage}>Read More</Text>
                 </TouchableOpacity>
@@ -543,7 +546,7 @@ export default function HomeFeed() {
                 <Image 
                   key={repost.id}
                   source={
-                    repost.user.image
+                    repost.user && repost.user.image
                       ? { uri: repost.user.image }
                       : { uri: 'https://via.placeholder.com/36x36/94A3B8/FFFFFF?text=U' }
                   } 
@@ -563,6 +566,8 @@ export default function HomeFeed() {
   };
 
   const renderRepostItem = (item, index) => {
+    if (!item || !item.user) return null;
+    
     const isEven = index % 2 === 0;
     
     return (
@@ -590,10 +595,10 @@ export default function HomeFeed() {
             />
             <View style={styles.repostUserInfo}>
               <Text style={styles.repostUserName}>{getUserDisplayName(item.user)}</Text>
-              <Text style={styles.repostUsername}>@{item.user.username} • {formatTime(item.date_created)}</Text>
+              <Text style={styles.repostUsername}>@{item.user.username || 'unknown'} • {formatTime(item.date_created)}</Text>
             </View>
           </View>
-          <Text style={styles.repostTextContent}>{item.content}</Text>
+          <Text style={styles.repostTextContent}>{item.content || ''}</Text>
           {item.images && item.images.length > 0 && (
             <Image 
               source={{ uri: item.images[0].image }} 
@@ -657,7 +662,7 @@ export default function HomeFeed() {
             <View style={styles.thumbnailOverlay}>
               <Image 
                 source={
-                  currentPost.user.image
+                  currentPost.user && currentPost.user.image
                     ? { uri: currentPost.user.image }
                     : { uri: 'https://via.placeholder.com/32x32/94A3B8/FFFFFF?text=U' }
                 } 
@@ -665,7 +670,7 @@ export default function HomeFeed() {
               />
               <View style={styles.thumbnailInfo}>
                 <Text style={styles.thumbnailUserName}>{getUserDisplayName(currentPost.user)}</Text>
-                <Text style={styles.postUsername}>@{currentPost.user.username}</Text>
+                <Text style={styles.postUsername}>@{currentPost.user?.username || 'unknown'}</Text>
               </View>
             </View>
             
@@ -835,7 +840,7 @@ export default function HomeFeed() {
               {repostCount > 0 ? `${repostCount} reposts available` : 'No reposts yet'}
             </Text>
             <Text style={styles.previewSubText}>
-              Post by @{currentPost.user.username}
+              Post by @{currentPost.user?.username || 'unknown'}
             </Text>
           </View>
         </View>
@@ -886,7 +891,7 @@ export default function HomeFeed() {
 
         <FeedHeader
           userImage={avatar || userImage}
-          notifications={allnot?.result | []}
+          notifications={allnot?.result || []}
         />
         
         <FlatList
@@ -1225,8 +1230,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Figtree',
     color: '#000000',
     fontSize: 12,
-    fontWeight: 600,
-    lineHeight: 1,
+    fontWeight: '600',
+    lineHeight: 16,
     flex: 1,
   },
   
@@ -1235,7 +1240,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     position: 'absolute',
-    bottom: 220, // Moved up to make space for larger bottom images
+    bottom: 220,
     width: '100%',
   },
   pageIndicator: {
@@ -1245,11 +1250,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#60A5FA',
     marginHorizontal: 4,
   },
-
-  // New styles for bottom images
   bottomImagesContainer: {
     position: 'absolute',
-    bottom: 0, // Above the swipe button
+    bottom: 0,
     left: 0,
     right: 0,
     height: 40,
@@ -1273,7 +1276,6 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: 'cover',
   },
-  // Left image styles (rotated left)
   leftImageWrapper: {
     transform: [{ rotate: '-15deg' }],
     zIndex: 1,
@@ -1282,27 +1284,22 @@ const styles = StyleSheet.create({
   leftImage: {
     // Additional styles for left image if needed
   },
-  // Center image styles (blurred)
   centerImageWrapper: {
-    zIndex: 3, // Highest z-index for center
-    marginTop: -75, // Move center image higher than side images
+    zIndex: 3,
+    marginTop: -75,
     position: 'relative',
   },
   centerImage: {
     // Light blur effect is applied via blurRadius prop
   },
-  // Gradient overlay to simulate gradient blur effect
   gradientOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '10%', // Cover bottom 60% of the image
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent overlay
-    // Note: For true gradient blur, you'd need react-native-linear-gradient
-    // This is a simplified simulation
+    height: '10%',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
-  // Right image styles (rotated right)
   rightImageWrapper: {
     transform: [{ rotate: '15deg' }],
     zIndex: 1,
@@ -1311,7 +1308,6 @@ const styles = StyleSheet.create({
   rightImage: {
     // Additional styles for right image if needed
   },
-  
   fixedSwipeButton: {
     position: 'absolute',
     height: 48,
@@ -1567,8 +1563,8 @@ const styles = StyleSheet.create({
   },
   repostTextContent: {
     fontSize: 12,
-    fontWeight: 400,
-    lineHeight: '150%',
+    fontWeight: '400',
+    lineHeight: 18,
     color: '#000000',
   },
   repostImage: {
